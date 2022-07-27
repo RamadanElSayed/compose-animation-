@@ -5,14 +5,7 @@ import androidx.compose.animation.core.animateIntOffsetAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Slider
@@ -50,6 +43,7 @@ fun SpringPlayground() {
         BoxWithConstraints(
             Modifier
                 .fillMaxWidth()
+                .background(Color.Red)
                 .weight(1f, true)
                 .zIndex(1f),
             contentAlignment = Alignment.TopCenter
@@ -59,6 +53,9 @@ fun SpringPlayground() {
             var onTop by remember {
                 mutableStateOf(true)
             }
+            var onBottom by remember {
+                mutableStateOf(true)
+            }
             val offset =
                 animateIntOffsetAsState(
                     targetValue = if (onTop) IntOffset.Zero else IntOffset(0,
@@ -66,17 +63,48 @@ fun SpringPlayground() {
                             (maxHeight - size).roundToPx()
                         }), spring(dampingRatio.value, stiffness.value)
                 )
-            Box(
-                modifier = Modifier
-                    .offset { offset.value }
-                    .shadow(
-                        8.dp,
-                        shape,
-                    )
-                    .background(Color.Blue)
-                    .size(size)
-                    .clickable { onTop = onTop.not() }
-            )
+
+            val offset1 =
+                animateIntOffsetAsState(
+                    targetValue = if (onBottom) IntOffset(0,
+                        with(LocalDensity.current) {
+                            (maxHeight - size).roundToPx()
+                        }) else IntOffset.Zero, spring(dampingRatio.value, stiffness.value)
+                )
+            Row() {
+
+
+                Box(
+                    modifier = Modifier
+                        .offset { offset.value }
+                        .shadow(
+                            8.dp,
+                            shape,
+                        )
+                        .background(Color.Blue)
+                        .size(size)
+                        .clickable {
+                            onTop = onTop.not()
+                            onBottom = onBottom.not()
+                        }
+                )
+                Spacer(modifier = Modifier.width(100.dp))
+
+                Box(
+                    modifier = Modifier
+                        .offset { offset1.value }
+                        .shadow(
+                            8.dp,
+                            shape,
+                        )
+                        .background(Color.Blue)
+                        .size(size)
+                        .clickable {
+                            onTop = onTop.not()
+                            onBottom = onBottom.not()
+                        }
+                )
+            }
 
         }
         Column(
